@@ -1,0 +1,18 @@
+$commonscript = <<-SCRIPT
+sudo yum install epel-release -y
+sudo echo "LANG=en_US.utf-8" > /etc/environment
+sudo echo "LC_ALL=en_US.utf-8" >> /etc/environment
+sudo yum install ansible -y
+SCRIPT
+
+Vagrant.configure("2") do |config|
+    # Box
+    config.vm.box = "centos/7"
+
+    config.vm.provider "virtualbox" do |v|
+    v.memory = 4095
+    v.cpus = 2
+    end
+
+    config.vm.provision "shell", inline: $commonscript
+end

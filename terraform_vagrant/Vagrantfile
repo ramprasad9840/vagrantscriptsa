@@ -1,0 +1,33 @@
+$generalscript = <<-SCRIPT
+sudo yum install epel-release -y
+sudo echo "LANG=en_US.utf-8" > /etc/environment
+sudo echo "LC_ALL=en_US.utf-8" >> /etc/environment
+SCRIPT
+
+$terraformscript = <<-SCRIPT
+sudo yum install wget -y
+wget https://releases.hashicorp.com/terraform/0.12.8/terraform_0.12.8_linux_amd64.zip
+sudo yum install unzip -y
+unzip terraform_0.12.8_linux_amd64.zip
+sudo mv terraform /usr/local/bin/
+SCRIPT
+
+$azurecli = <<-SCRIPT
+sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
+sudo yum install azure-cli -y
+SCRIPT
+
+Vagrant.configure("2") do |config|
+    # Box
+    config.vm.box = "centos/7"
+
+    config.vm.provider "virtualbox" do |v|
+    v.memory = 1024
+    v.cpus = 2
+    end
+
+
+    config.vm.provision "shell", inline: $generalscript
+    config.vm.provision "shell", inline: $terraformscript
+end

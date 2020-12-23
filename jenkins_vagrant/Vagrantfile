@@ -1,0 +1,26 @@
+$commonscript = <<-SCRIPT
+sudo yum install epel-release -y
+sudo echo "LANG=en_US.utf-8" > /etc/environment
+sudo echo "LC_ALL=en_US.utf-8" >> /etc/environment
+sudo yum install wget -y
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
+sudo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
+sudo yum install java-1.8.0-openjdk -y 
+sudo yum install jenkins -y 
+sudo service jenkins start
+sudo chkconfig jenkins on 
+SCRIPT
+
+Vagrant.configure("2") do |config|
+    # Box
+    config.vm.box = "centos/7"
+
+    config.vm.provider "virtualbox" do |v|
+    v.memory = 2048 
+    v.cpus = 2
+    end
+
+    config.vm.network "forwarded_port", guest: 8080, host: 8080
+
+    config.vm.provision "shell", inline: $commonscript
+end

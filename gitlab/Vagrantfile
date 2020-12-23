@@ -1,0 +1,26 @@
+$generalscript = <<-SCRIPT
+sudo yum install epel-release -y
+sudo echo "LANG=en_US.utf-8" > /etc/environment
+sudo echo "LC_ALL=en_US.utf-8" >> /etc/environment
+sudo yum install git -y
+sudo yum install -y curl policycoreutils-python openssh-server openssh-clients
+sudo yum install -y postfix
+sudo systemctl enable postfix.service
+sudo systemctl start postfix.service
+curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
+sudo yum install gitlab-ce -y
+SCRIPT
+
+Vagrant.configure("2") do |config|
+    # Box
+    config.vm.box = "centos/7"
+
+    config.vm.provider "virtualbox" do |v|
+    v.memory = 4098
+    v.cpus = 2
+    end
+
+    config.vm.network "forwarded_port", guest: 80, host: 80
+    
+    config.vm.provision "shell", inline: $generalscript
+end
